@@ -1,0 +1,7 @@
+.idea/
+.sass-cache/
+.grunt/
+node_modules/
+css/
+dist/
+tests/SpecRunner.html

@@ -1,0 +1,43 @@
+// a conservative CSS reset to undo some browser defaults
+// and give us a reliable starting point for styling
+
+// stop pesky mobile browsers from overriding the text size
+html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+// remove most default presentation -
+// notice that we leave most form controls alone here
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, dialog, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video,
+main {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+// ensure html5 block-level elements are displayed correctly
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section,
+main {
+    display: block;
+}
+
+// take default bullets/numbers off lists
+ul, ol {
+    list-style: none;
+}

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        div {
+            position: relative;
+            width: 83px;
+            height: 283px;
+            margin: 5rem;
+            background-image:
+                linear-gradient(to top,
+                    rgba(255,255,255,0.1) 0%, /* bottom of bottle to bottom of label */
+                    rgba(255,255,255,0.25) 28%,
+                    rgba(255,255,255,0.4) 28%, /* bottom of label to top of label */
+                    rgba(255,255,255,0.4) 46.5%,
+                    rgba(255,255,255,0.25) 46.5%,  /* top of label to top of cider */
+                    rgba(255,255,255,0.1) 80%,
+                    rgba(255,255,255,0.25) 80%, /* top of cider to bottom of cap */
+                    rgba(255,255,255,0.35) 96%,
+                    rgba(255,255,255,0.1) 96%,  /* bottom of cap to top of cap and bottle */
+                    rgba(255,255,255,0.2) 100%
+                ),
+                url("bottle-bg.png");
+        }
+
+        span {
+            color: #acc314;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 57.5%;
+            text-align: center;
+            font-family: "DIN Condensed", sans-serif;
+            font-size: 1.4rem;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+        }
+
+        em {
+            color: rgba(255,255,255,0.75);
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(57.5% + 1.4rem);
+            text-align: center;
+            font-size: 0.666rem;
+            font-family: Baskerville,serif;
+        }
+
+        strong {
+            font-style: normal;
+        }
+    </style>
+</head>
+<body>
+    <div><span>SCRUMPY</span><em>for <strong>Trello</strong></em></div>
+</body>
+</html>

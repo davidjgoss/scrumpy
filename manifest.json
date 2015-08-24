@@ -1,0 +1,31 @@
+{
+    "name": "Scrumpy",
+    "version": "0.0.1",
+    "manifest_version": 2,
+    "description": "Chrome extension for simple Scrum functionality on Trello.com",
+    "icons": {
+        "128": "icon.png"
+    },
+    "permissions": ["tabs", "storage"],
+    "background": {
+        "scripts": [
+            "dist/background.js"
+        ]
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://trello.com/b/*"
+            ],
+            "css": [
+                "css/trello.css"
+            ],
+            "js": [
+                "lib/babel-polyfill.min.js",
+                "lib/moment.min.js",
+                "dist/TrelloAgent.js",
+                "dist/trello-bootstrap.js"
+            ]
+        }
+    ]
+}

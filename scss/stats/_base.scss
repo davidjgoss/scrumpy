@@ -1,0 +1,37 @@
+// set absolutely everything to inherit its box-sizing, and then set the
+// root element to `border-box` - this means we'll always have the nice
+// box-model by default, unless a specific component overrides it.
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+html {
+    box-sizing: border-box;
+    background-color: #fff;
+    color: #333;
+    font-family: $scrumpy-fonts;
+}
+
+body {
+    padding: 2rem;
+}
+
+em {
+    font-style: italic;
+}
+
+strong {
+    font-weight: bold;
+}
+
+a {
+    color: $scrumpy-green;
+    text-decoration: none;
+}
+
+img, svg {
+    max-width: 100%;
+    max-height: 100%;
+}
