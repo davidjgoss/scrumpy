@@ -4,9 +4,25 @@ class ScrumpyTrelloAgent {
     }
 
     go() {
-        this.addTotalsNodes();
-        this.addStatsButton();
-        this.doTotals();
+        this.waitForTrelloUI().then(function() {
+            this.addTotalsNodes();
+            this.addStatsButton();
+            this.doTotals();
+        }.bind(this));
+    }
+
+    waitForTrelloUI() {
+        let selector = this.selectors.menu;
+        return new Promise(function(resolve) {
+            function checkForHeaderNode() {
+                if (document.querySelector(selector)) {
+                    resolve();
+                } else {
+                    window.setTimeout(checkForHeaderNode, 100);
+                }
+            }
+            checkForHeaderNode();
+        });
     }
 
     setConstants() {
