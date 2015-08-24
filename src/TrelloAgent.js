@@ -87,7 +87,7 @@ class ScrumpyTrelloAgent {
             this.doListTotals(list);
         }
 
-        this.timer = window.setTimeout(this.doTotals.bind(this), 5000);
+        this.timer = window.setTimeout(this.doTotals.bind(this), 3000);
     }
 
     doListTotals(list) {
