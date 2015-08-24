@@ -52,6 +52,19 @@ module.exports = function(grunt) {
                 files: "scss/**/*.scss",
                 tasks: ["sass"]
             }
+        },
+        compress: {
+            chrome: {
+                options: {
+                    mode: "zip",
+                    archive: "../scrumpy.zip",
+                    pretty: true
+                },
+                files: [{
+                    expand: true,
+                    src: ["manifest.json", "icon.png", "*.html", "css/*", "dist/*", "images/*", "lib/*"]
+                }]
+            }
         }
     });
 
@@ -59,8 +72,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-jasmine");
     grunt.loadNpmTasks("grunt-contrib-sass");
     grunt.loadNpmTasks("grunt-contrib-watch");
+    grunt.loadNpmTasks("grunt-contrib-compress");
 
     grunt.registerTask("default", ["watch"]);
     grunt.registerTask("test", ["jasmine"]);
-    grunt.registerTask("dist", ["babel", "test", "sass"]);
+    grunt.registerTask("build", ["compress:chrome"]);
+    grunt.registerTask("dist", ["babel", "test", "sass", "build"]);
 };
