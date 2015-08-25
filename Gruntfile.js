@@ -3,7 +3,7 @@ module.exports = function(grunt) {
         sass: {
             all: {
                 files: {
-                    "css/style.css": "css/style.scss"
+                    "css/style.css": "scss/style.scss"
                 }
             }
         },
@@ -12,7 +12,7 @@ module.exports = function(grunt) {
                 options: {
                     atBegin: true
                 },
-                files: "css/**/*.scss",
+                files: "scss/**/*.scss",
                 tasks: ["sass"]
             }
         }

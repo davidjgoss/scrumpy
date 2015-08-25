@@ -1,0 +1,109 @@
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%; }
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, dialog, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video,
+main {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font: inherit;
+  vertical-align: baseline; }
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section,
+main {
+  display: block; }
+
+ul, ol {
+  list-style: none; }
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit; }
+
+html {
+  box-sizing: border-box;
+  background-color: #fff;
+  color: #333;
+  font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5em; }
+
+body {
+  padding-left: 1rem;
+  padding-right: 1rem; }
+
+em {
+  font-style: italic; }
+
+strong {
+  font-weight: bold; }
+
+a {
+  color: #acc314;
+  text-decoration: none; }
+
+img, svg {
+  max-width: 100%;
+  max-height: 100%; }
+
+h1, h2 {
+  font-size: 1.25rem;
+  font-weight: bold; }
+
+.main {
+  position: relative;
+  max-width: 35rem;
+  padding-left: 5rem;
+  margin-left: auto;
+  margin-right: auto; }
+  .main * + * {
+    margin-top: 1.5rem; }
+
+.main-title b {
+  color: #acc314; }
+
+.screenshot {
+  display: block; }
+
+.bullets {
+  list-style: square outside; }
+  .bullets li {
+    margin-top: 0; }
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0); }
+  20%, 80% {
+    transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0); }
+  40%, 60% {
+    transform: translate3d(4px, 0, 0); } }
+.logo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3.5rem; }
+
+.logo__img {
+  display: block; }
+  .logo__img:hover {
+    transform: translate3d(0, 0, 0);
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+
+/*# sourceMappingURL=style.css.map */

@@ -1,6 +1,5 @@
 .idea/
 .sass-cache/
 .grunt/
-css/*.css
-css/*.map
 node_modules/
+*.map
