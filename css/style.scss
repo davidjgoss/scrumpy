@@ -3,10 +3,7 @@ $scrumpy-green: #acc314;
 
 @import "reset";
 @import "base";
+@import "main";
+@import "logo";
 
-@import "../chartist/chartist.scss";
-
-@import "maintitle";
-@import "problems";
-@import "burndown";
-@import "layout";
+// stuff

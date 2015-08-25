@@ -1,0 +1,29 @@
+.main {
+    position: relative;
+    max-width: 35rem;
+    padding-left: 5rem;
+    margin-left: auto;
+    margin-right: auto;
+
+    * + * {
+        margin-top: 1.5rem;
+    }
+}
+
+.main-title {
+    b {
+        color: $scrumpy-green;
+    }
+}
+
+.screenshot {
+    display: block;
+}
+
+.bullets {
+    list-style: square outside;
+
+    li {
+        margin-top: 0;
+    }
+}

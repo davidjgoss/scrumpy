@@ -1,7 +1,6 @@
 .idea/
 .sass-cache/
 .grunt/
+css/*.css
+css/*.map
 node_modules/
-css/
-dist/
-tests/SpecRunner.html

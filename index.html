@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Scrumpy: Simple scrum functionality on Trello.com</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <main class="main" role="main">
+        <div class="logo">
+            <img class="logo__img" src="images/logo.png" />
+        </div>
+        <h1 class="main-title"><b>Scrumpy</b> is simple scrum functionality for Trello.</h1>
+        <p><a href="https://chrome.google.com/webstore/detail/scrumpy/ejlgncpomcbacggjfhbenjhpaldlljfl">Get it in the Chrome Web Store</a></p>
+
+        <section>
+            <p>Append your estimates and actuals to your card names with parentheses and braces, like this:</p>
+            <img class="screenshot" src="images/card-example.png" />
+            <p>Scrumpy will keep totals at the top of each column and update them every few seconds as you work:</p>
+            <img class="screenshot" src="images/totals-example.png" />
+            <p>When you're ready to see some charts, there's a new "Stats" button in the top right menu bar:</p>
+            <img class="screenshot" src="images/stats-button-example.png" />
+            <p>All you need to enter is the sprint duration (in work days &mdash; not including weekends) and the start date (Scrumpy will remember these for each board):</p>
+            <img class="screenshot" src="images/parameters-dialog-example.png" />
+            <p>Then, you'll see a simple burndown chart and a few other stats:</p>
+            <img class="screenshot" src="images/stats-example.png" />
+        </section>
+
+        <section>
+            <h2>Assumptions</h2>
+            <p>Scrumpy does make a few assumptions about the way your team works (#sorrynotsorry):</p>
+            <ul class="bullets">
+                <li>You work Monday to Friday (weekends are factored out)</li>
+                <li>You use three columns: pending, in-flight and done (but call them whatever you like)</li>
+                <li>If you run your stats in the morning, you want to report up to yesterday, but if you run them in the afternoon, you want to include today too</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Privacy</h2>
+            <p>Scrumpy doesn't modify any of your Trello data itself or even access it directly; instead, it just relies on your team using the notation for estimates and actuals, and finds all the data it needs in the page. Because of this, there's a pretty low chance of Scrumpy conflicting with another extension/plugin or breaking when Trello.com changes.</p>
+            <p>Scrumpy is a standalone extension; it doesn't send your data anywhere. Durations and start dates you enter for boards are saved within Chrome for convenience, but that's it.</p>
+        </section>
+    </main>
+</body>
+</html>
