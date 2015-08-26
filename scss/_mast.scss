@@ -1,0 +1,54 @@
+.site-title__app-name {
+    color: $scrumpy-green;
+}
+
+.store-link {
+    display: block;
+
+    .can-install &,
+    .is-installed & {
+        display: none;
+    }
+}
+
+.installed {
+    display: none;
+
+    .is-installed {
+        display: block;
+    }
+}
+
+.install {
+    display: none;
+
+    .can-install & {
+        display: block;
+    }
+}
+
+.install__button {
+    background-color: $scrumpy-green;
+    color: #fff;
+    text-transform: uppercase;
+    font-family: $scrumpy-fonts;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.333em;
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+
+.install__message {
+    font-style: italic;
+    font-size: 0.875rem;
+    margin-left: 0.666rem;
+
+    @media all and (max-width:500px) {
+        display: block;
+        margin-left: 0;
+        margin-top: 0.25rem;
+    }
+}

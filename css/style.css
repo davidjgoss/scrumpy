@@ -74,9 +74,6 @@ h1, h2 {
   .main * + * {
     margin-top: 1.5rem; }
 
-.main-title b {
-  color: #acc314; }
-
 .screenshot {
   display: block; }
 
@@ -84,16 +81,6 @@ h1, h2 {
   list-style: square outside; }
   .bullets li {
     margin-top: 0; }
-
-.fork-me {
-  display: none;
-  position: fixed;
-  top: 0;
-  right: 0;
-  margin-top: 0; }
-  @media all and (min-width: 750px) {
-    .fork-me {
-      display: block; } }
 
 @keyframes shake {
   10%, 90% {
@@ -115,5 +102,56 @@ h1, h2 {
   .logo__img:hover {
     transform: translate3d(0, 0, 0);
     animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+
+.site-title__app-name {
+  color: #acc314; }
+
+.store-link {
+  display: block; }
+  .can-install .store-link, .is-installed .store-link {
+    display: none; }
+
+.installed {
+  display: none; }
+  .installed .is-installed {
+    display: block; }
+
+.install {
+  display: none; }
+  .can-install .install {
+    display: block; }
+
+.install__button {
+  background-color: #acc314;
+  color: #fff;
+  text-transform: uppercase;
+  font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.333em;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  cursor: pointer; }
+
+.install__message {
+  font-style: italic;
+  font-size: 0.875rem;
+  margin-left: 0.666rem; }
+  @media all and (max-width: 500px) {
+    .install__message {
+      display: block;
+      margin-left: 0;
+      margin-top: 0.25rem; } }
+
+.fork-me {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  margin-top: 0; }
+  @media all and (min-width: 750px) {
+    .fork-me {
+      display: block; } }
 
 /*# sourceMappingURL=style.css.map */

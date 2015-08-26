@@ -12,8 +12,20 @@
         <div class="logo">
             <img class="logo__img" src="images/logo.png" />
         </div>
-        <h1 class="main-title"><b class="main-title__app-name">Scrumpy</b> is simple scrum functionality for Trello.</h1>
-        <p><a href="https://chrome.google.com/webstore/detail/scrumpy/ejlgncpomcbacggjfhbenjhpaldlljfl">Get it in the Chrome Web Store</a></p>
+
+        <header class="mast">
+            <h1 class="site-title"><b class="site-title__app-name">Scrumpy</b> is simple scrum functionality for Trello.</h1>
+            <div class="store-link">
+                <a href="https://chrome.google.com/webstore/detail/scrumpy/ejlgncpomcbacggjfhbenjhpaldlljfl">Get it in the Chrome Web Store</a>
+            </div>
+            <div class="install">
+                <button id="js-install-button" class="install__button">Add to Chrome</button>
+                <span class="install__message">(free for all features)</span>
+            </div>
+            <div class="installed">
+                <p>Looks like you've got Scrumpy installed already.</p>
+            </div>
+        </header>
 
         <section>
             <p>Append your estimates and actuals to your card names with parentheses and braces, like this:</p>
@@ -48,5 +60,7 @@
             <img alt="Fork me on GitHub" src="images/fork-me.png" />
         </a>
     </main>
+
+<script src="install.js"></script>
 </body>
 </html>
