@@ -17,10 +17,12 @@
 }
 
 .logo {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3.5rem;
+    float: left;
+    width: 5rem;
+    padding-right: 1.5rem;
+    position: relative;
+    position: sticky;
+    top: 1.5rem;
 }
 
 .logo__img {

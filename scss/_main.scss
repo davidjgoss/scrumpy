@@ -1,7 +1,6 @@
 body {
     position: relative;
     max-width: 35rem;
-    padding-left: 5rem;
     border-left: 0.5rem solid #fff;
     border-right: 0.5rem solid #fff;
     margin-left: auto;
@@ -12,12 +11,17 @@ body {
     }
 }
 
+.main {
+    float: right;
+    width: calc(100% - 5rem);
+}
+
 .screenshot {
     display: block;
 }
 
 .bullets {
-    list-style: square outside;
+    list-style: square inside;
 
     li {
         margin-top: 0;
@@ -25,8 +29,11 @@ body {
 }
 
 .legal {
+    clear: both;
+    text-align: right;
     font-size: 0.75rem;
     line-height: 1rem;
+    padding-top: 1.5rem;
 }
 
 .heart-trello {

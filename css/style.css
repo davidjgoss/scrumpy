@@ -64,7 +64,6 @@ h1, h2 {
 body {
   position: relative;
   max-width: 35rem;
-  padding-left: 5rem;
   border-left: 0.5rem solid #fff;
   border-right: 0.5rem solid #fff;
   margin-left: auto;
@@ -72,17 +71,24 @@ body {
   body * + * {
     margin-top: 1.5rem; }
 
+.main {
+  float: right;
+  width: calc(100% - 5rem); }
+
 .screenshot {
   display: block; }
 
 .bullets {
-  list-style: square outside; }
+  list-style: square inside; }
   .bullets li {
     margin-top: 0; }
 
 .legal {
+  clear: both;
+  text-align: right;
   font-size: 0.75rem;
-  line-height: 1rem; }
+  line-height: 1rem;
+  padding-top: 1.5rem; }
 
 .heart-trello:after {
   content: url("../images/icon-heart.svg");
@@ -103,10 +109,12 @@ body {
   40%, 60% {
     transform: rotate(4deg); } }
 .logo {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3.5rem; }
+  float: left;
+  width: 5rem;
+  padding-right: 1.5rem;
+  position: relative;
+  position: sticky;
+  top: 1.5rem; }
 
 .logo__img {
   display: block; }
