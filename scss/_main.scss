@@ -1,7 +1,9 @@
-.main {
+body {
     position: relative;
     max-width: 35rem;
     padding-left: 5rem;
+    border-left: 0.5rem solid #fff;
+    border-right: 0.5rem solid #fff;
     margin-left: auto;
     margin-right: auto;
 
@@ -19,5 +21,22 @@
 
     li {
         margin-top: 0;
+    }
+}
+
+.legal {
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+
+.heart-trello {
+    &:after {
+        content: url("../images/icon-heart.svg");
+        position: relative;
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        margin-left: 0.25em;
+        vertical-align: text-top;
     }
 }

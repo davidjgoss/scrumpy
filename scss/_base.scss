@@ -16,11 +16,6 @@ html {
     line-height: 1.5em;
 }
 
-body {
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
-
 em {
     font-style: italic;
 }
@@ -31,7 +26,7 @@ strong {
 
 a {
     color: $scrumpy-green;
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 img, svg {
