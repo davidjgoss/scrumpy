@@ -113,8 +113,19 @@ h1, h2 {
 
 .installed {
   display: none; }
-  .installed .is-installed {
+  .is-installed .installed {
     display: block; }
+
+.installed__message {
+  font-style: italic; }
+  .installed__message:before {
+    content: url("../images/icon-yep.svg");
+    position: relative;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 0.5em;
+    vertical-align: text-top; }
 
 .install {
   display: none; }

@@ -14,8 +14,22 @@
 .installed {
     display: none;
 
-    .is-installed {
+    .is-installed & {
         display: block;
+    }
+}
+
+.installed__message {
+    font-style: italic;
+
+    &:before {
+        content: url("../images/icon-yep.svg");
+        position: relative;
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        margin-right: 0.5em;
+        vertical-align: text-top;
     }
 }
 
