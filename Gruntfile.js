@@ -10,7 +10,8 @@ module.exports = function(grunt) {
                     "dist/StatsGenerator.js": "src/StatsGenerator.js",
                     "dist/background.js": "src/background.js",
                     "dist/trello-bootstrap.js": "src/trello-bootstrap.js",
-                    "dist/stats-bootstrap.js": "src/stats-bootstrap.js"
+                    "dist/stats-bootstrap.js": "src/stats-bootstrap.js",
+                    "dist/website.js": "src/website.js"
                 }
             }
         },

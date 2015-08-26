@@ -26,6 +26,14 @@
                 "dist/TrelloAgent.js",
                 "dist/trello-bootstrap.js"
             ]
+        },
+        {
+            "matches": [
+                "http://davidjgoss.github.io/scrumpy/"
+            ],
+            "js": [
+                "dist/website.js"
+            ]
         }
     ]
 }
