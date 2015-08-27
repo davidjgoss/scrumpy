@@ -128,6 +128,8 @@ class ScrumpyTrelloAgent {
     }
 
     updateListTotals(list, estimateTotal, actualTotal) {
+        estimateTotal = this.getAmountAsNumber(estimateTotal);
+        actualTotal = this.getAmountAsNumber(actualTotal);
         list.setAttribute("data-scrumpy-estimate", estimateTotal);
         list.setAttribute("data-scrumpy-actual", actualTotal);
         this.getListTotalsNode(list).textContent = ` (${estimateTotal}) {${actualTotal}}`;
@@ -174,7 +176,7 @@ class ScrumpyTrelloAgent {
     }
 
     getAmountAsNumber(value) {
-        return isNaN(Number(value)) ? "none" : Number(value);
+        return isNaN(Number(value)) ? "none" : Math.ceil(Number(value) * 100) / 100;
     }
 
     getCardsData(list) {
