@@ -4,25 +4,45 @@ class ScrumpyTrelloAgent {
     }
 
     go() {
-        this.waitForTrelloUI().then(function() {
-            this.addTotalsNodes();
-            this.addStatsButton();
-            this.doTotals();
-        }.bind(this));
+        this.refresh();
     }
 
-    waitForTrelloUI() {
-        let selector = this.selectors.menu;
+    isBoard() {
+        return !!this.checkForBoardPath(window.location.pathname);
+    }
+
+    checkForBoardPath(path) {
+        return path.match(/^\/b\/[\w\d]*\/.*/);
+    }
+
+    waitForBoardUI() {
+        let menuSelector = this.selectors.menu,
+            listSelector = this.selectors.list;
         return new Promise(function(resolve) {
-            function checkForHeaderNode() {
-                if (document.querySelector(selector)) {
+            function checkForBoardUI() {
+                if (document.querySelector(menuSelector) && document.querySelector(listSelector)) {
                     resolve();
                 } else {
-                    window.setTimeout(checkForHeaderNode, 100);
+                    window.setTimeout(checkForBoardUI, 100);
                 }
             }
-            checkForHeaderNode();
+            checkForBoardUI();
         });
+    }
+
+    refresh() {
+        if (this.timer) {
+            window.clearTimeout(this.timer);
+        }
+
+        if (this.isBoard()) {
+            this.waitForBoardUI().then(function() {
+                this.refreshBoard();
+                this.timer = window.setTimeout(this.refresh.bind(this), 3000);
+            }.bind(this));
+        } else {
+            this.timer = window.setTimeout(this.refresh.bind(this), 1000);
+        }
     }
 
     setConstants() {
@@ -40,57 +60,56 @@ class ScrumpyTrelloAgent {
         };
     }
 
+    hasStatsButton() {
+        return !!document.querySelector("#js-scrumpy-stats-button");
+    }
+
     createStatsButton() {
         let statsButton = document.createElement("a");
 
         statsButton.href = "#";
+        statsButton.id = "js-scrumpy-stats-button";
         statsButton.className = "header-btn";
         statsButton.innerHTML = "<span class='header-btn-text'>Stats</span>";
         statsButton.addEventListener("click", e => {
             e.preventDefault();
-            this.doTotals();
+            this.refresh();
             this.doStats();
         });
 
         return statsButton;
     }
 
-    addStatsButton() {
-        let headerNode = document.querySelector(this.selectors.menu);
-        headerNode.parentNode.insertBefore(this.createStatsButton(), headerNode);
+    checkStatsButton() {
+        if (!this.hasStatsButton()) {
+            let headerNode = document.querySelector(this.selectors.menu);
+            headerNode.parentNode.insertBefore(this.createStatsButton(), headerNode);
+        }
     }
 
-    addTotalsNodes() {
+    getListTotalsNode(list) {
+        let totalsNode = list.querySelector(".js-scrumpy-totals");
+        if (!totalsNode) {
+            totalsNode = document.createElement("span");
+            totalsNode.className = "js-scrumpy-totals";
+            list.querySelector(this.selectors.listTitle).appendChild(totalsNode);
+        }
+        return totalsNode;
+    }
+
+    refreshBoard() {
         let lists = document.querySelectorAll(this.selectors.list);
 
         for (let list of lists) {
-            this.addTotalsNode(list);
+            this.refreshListTotals(list);
+        }
+
+        if (lists.length >= 3) {
+            this.checkStatsButton();
         }
     }
 
-    addTotalsNode(list) {
-        let titleNode = list.querySelector(this.selectors.listTitle), totalsNode;
-
-        totalsNode = document.createElement("span");
-        totalsNode.setAttribute("data-scrumpy-totals", "");
-        titleNode.appendChild(totalsNode);
-    }
-
-    doTotals() {
-        let lists = document.querySelectorAll(this.selectors.list);
-
-        if (this.timer) {
-            window.clearTimeout(this.timer);
-        }
-
-        for (let list of lists) {
-            this.doListTotals(list);
-        }
-
-        this.timer = window.setTimeout(this.doTotals.bind(this), 3000);
-    }
-
-    doListTotals(list) {
+    refreshListTotals(list) {
         let cards = list.querySelectorAll(this.selectors.card),
             estimateTotal = 0,
             actualTotal = 0;
@@ -105,10 +124,13 @@ class ScrumpyTrelloAgent {
             }
         }
 
+        this.updateListTotals(list, estimateTotal, actualTotal);
+    }
+
+    updateListTotals(list, estimateTotal, actualTotal) {
         list.setAttribute("data-scrumpy-estimate", estimateTotal);
         list.setAttribute("data-scrumpy-actual", actualTotal);
-
-        list.querySelector("[data-scrumpy-totals]").textContent = ` (${estimateTotal}) {${actualTotal}}`;
+        this.getListTotalsNode(list).textContent = ` (${estimateTotal}) {${actualTotal}}`;
     }
 
     extractCardName(card) {
@@ -185,7 +207,7 @@ class ScrumpyTrelloAgent {
     }
 
     extractBoardIdFromPath(path) {
-        return path.match(/\/b\/([\w\d]*)\/.*/)[1]
+        return path.match(/^\/b\/([\w\d]*)\/.*/)[1]
     }
 
     getStatsParameters() {
