@@ -212,6 +212,14 @@ class ScrumpyTrelloAgent {
         return path.match(/^\/b\/([\w\d]*)\/.*/)[1]
     }
 
+    fixStartDate(date) {
+        let dateMoment = moment(date);
+        if (dateMoment.isoWeekday() > 5) {
+            dateMoment = moment(dateMoment).startOf("isoweek").add(7, "days");
+        }
+        return dateMoment.format("YYYY-MM-DD");
+    }
+
     getStatsParameters() {
         let boardId = this.getBoardId(), dialogPromise;
         dialogPromise = new Promise(function(resolve, reject) {
@@ -232,8 +240,8 @@ class ScrumpyTrelloAgent {
 
             dialog.close();
             callback({
-                duration: Number(dialog.querySelector("#scrumpy-duration").value),
-                startDate: dialog.querySelector("#scrumpy-startdate").value
+                duration: ~~(dialog.querySelector("#scrumpy-duration").value),
+                startDate: this.fixStartDate(dialog.querySelector("#scrumpy-startdate").value)
             });
         });
     }
