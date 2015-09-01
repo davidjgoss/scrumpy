@@ -16,6 +16,16 @@
     }
 }
 
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .logo {
     float: left;
     width: 5rem;
@@ -27,9 +37,19 @@
 
 .logo__img {
     display: block;
+    transform: translate3d(0, 0, 0);
 
     &:hover {
-        transform: translate3d(0, 0, 0);
-        animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+        cursor: pointer;
+        animation: shake 0.75s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    &--crazy {
+        animation: spin 0.25s linear infinite both;
+
+        &:hover {
+            cursor: default;
+            animation: none;
+        }
     }
 }

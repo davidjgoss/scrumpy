@@ -108,6 +108,11 @@ body {
     transform: rotate(-4deg); }
   40%, 60% {
     transform: rotate(4deg); } }
+@keyframes spin {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
 .logo {
   float: left;
   width: 5rem;
@@ -117,10 +122,16 @@ body {
   top: 1.5rem; }
 
 .logo__img {
-  display: block; }
+  display: block;
+  transform: translate3d(0, 0, 0); }
   .logo__img:hover {
-    transform: translate3d(0, 0, 0);
-    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+    cursor: pointer;
+    animation: shake 0.75s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+  .logo__img--crazy {
+    animation: spin 0.25s linear infinite both; }
+    .logo__img--crazy:hover {
+      cursor: default;
+      animation: none; }
 
 .site-title__app-name {
   color: #acc314; }
