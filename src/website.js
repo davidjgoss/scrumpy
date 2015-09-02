@@ -1,3 +1,3 @@
 (function() {
-    document.body.classList.add("is-installed");
+    document.documentElement.classList.add("is-installed");
 }());

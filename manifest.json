@@ -33,7 +33,8 @@
             ],
             "js": [
                 "dist/website.js"
-            ]
+            ],
+            "run_at": "document_start"
         }
     ]
 }
