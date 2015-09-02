@@ -16,8 +16,8 @@ class ScrumpyTrelloAgent {
     }
 
     waitForBoardUI() {
-        let menuSelector = this.selectors.menu,
-            listSelector = this.selectors.list;
+        let menuSelector = this.selectors.MENU,
+            listSelector = this.selectors.LIST;
         return new Promise(function(resolve) {
             function checkForBoardUI() {
                 if (document.querySelector(menuSelector) && document.querySelector(listSelector)) {
@@ -47,16 +47,18 @@ class ScrumpyTrelloAgent {
 
     setConstants() {
         this.selectors = {
-            "boardName": ".board-header-btn-text",
-            "menu": ".js-open-add-menu",
-            "list": ".js-list",
-            "listTitle": ".js-list-name",
-            "card": ".js-card-name",
-            "cardId": ".card-short-id"
+            "BOARD_NAME": ".board-header-btn-text",
+            "MENU": ".js-open-add-menu",
+            "LIST": ".js-list",
+            "LIST_TITLE": ".js-list-name",
+            "CARD": ".list-card",
+            "CARD_TITLE": ".js-card-name",
+            "CARD_LABELS": ".js-card-labels",
+            "LABEL": ".card-label"
         };
         this.patterns = {
-            "cardEstimate": /.+\((\d+\.*\d*)\)/,
-            "cardActual": /.+\{(\d+\.*\d*)\}/
+            "CARD_ESTIMATE": /.+\((\d+\.*\d*)\)/,
+            "CARD_ACTUAL": /.+\{(\d+\.*\d*)\}/
         };
     }
 
@@ -82,7 +84,7 @@ class ScrumpyTrelloAgent {
 
     checkStatsButton() {
         if (!this.hasStatsButton()) {
-            let headerNode = document.querySelector(this.selectors.menu);
+            let headerNode = document.querySelector(this.selectors.MENU);
             headerNode.parentNode.insertBefore(this.createStatsButton(), headerNode);
         }
     }
@@ -92,13 +94,13 @@ class ScrumpyTrelloAgent {
         if (!totalsNode) {
             totalsNode = document.createElement("span");
             totalsNode.className = "js-scrumpy-totals";
-            list.querySelector(this.selectors.listTitle).appendChild(totalsNode);
+            list.querySelector(this.selectors.LIST_TITLE).appendChild(totalsNode);
         }
         return totalsNode;
     }
 
     refreshBoard() {
-        let lists = document.querySelectorAll(this.selectors.list);
+        let lists = document.querySelectorAll(this.selectors.LIST);
 
         for (let list of lists) {
             this.refreshListTotals(list);
@@ -110,7 +112,7 @@ class ScrumpyTrelloAgent {
     }
 
     refreshListTotals(list) {
-        let cards = list.querySelectorAll(this.selectors.card),
+        let cards = list.querySelectorAll(this.selectors.CARD),
             estimateTotal = 0,
             actualTotal = 0;
 
@@ -135,32 +137,39 @@ class ScrumpyTrelloAgent {
         this.getListTotalsNode(list).textContent = ` (${estimateTotal}) {${actualTotal}}`;
     }
 
-    extractCardName(card) {
-        let shortId = card.querySelector(this.selectors.cardId).textContent;
-        return card.textContent
-            .replace(shortId, "") // remove the identifier from the start
-            .replace(/\((\d+\.*\d*)\)|{(\d+\.*\d*)\}/g, "") // remove the estimates and actuals
-            .trim(); // remove whitespace
-    }
-
     parseCardData(card) {
-        card.setAttribute("data-scrumpy-name", this.extractCardName(card));
-        card.setAttribute("data-scrumpy-estimate", this.extractCardEstimate(card));
-        card.setAttribute("data-scrumpy-actual", this.extractCardActual(card));
+        let titleNode = card.querySelector(this.selectors.CARD_TITLE),
+            labelsNode = card.querySelector(this.selectors.CARD_LABELS);
+        card.setAttribute("data-scrumpy-name", this.extractCardName(titleNode));
+        card.setAttribute("data-scrumpy-estimate", this.extractCardEstimate(titleNode));
+        card.setAttribute("data-scrumpy-actual", this.extractCardActual(titleNode));
+        card.setAttribute("data-scrumpy-labels", this.extractCardLabels(labelsNode));
 
         return this.getCardData(card);
     }
 
-    extractCardEstimate(card) {
-        let matches = card.textContent.match(this.patterns.cardEstimate);
+    extractCardLabels(labelsNode) {
+        return Array.prototype.map.call(labelsNode.querySelectorAll(this.selectors.LABEL), labelNode => {
+            return labelNode.textContent;
+        }).join(",");
+    }
+
+    extractCardName(titleNode) {
+        return titleNode.textContent
+            .replace(/\((\d+\.*\d*)\)|{(\d+\.*\d*)\}/g, "") // remove the estimates and actuals
+            .trim(); // remove whitespace
+    }
+
+    extractCardEstimate(titleNode) {
+        let matches = titleNode.textContent.match(this.patterns.CARD_ESTIMATE);
         if (matches && matches.length > 1 && !isNaN(Number(matches[1]))) {
             return Number(matches[1]);
         }
         return "none";
     }
 
-    extractCardActual(card) {
-        let matches = card.textContent.match(this.patterns.cardActual);
+    extractCardActual(titleNode) {
+        let matches = titleNode.textContent.match(this.patterns.CARD_ACTUAL);
         if (matches && matches.length > 1 && !isNaN(Number(matches[1]))) {
             return Number(matches[1]);
         }
@@ -180,16 +189,16 @@ class ScrumpyTrelloAgent {
     }
 
     getCardsData(list) {
-        let cards = list.querySelectorAll(this.selectors.card);
+        let cards = list.querySelectorAll(this.selectors.CARD);
         return Array.prototype.map.call(cards, this.getCardData.bind(this));
     }
 
     getBoardName() {
-        return document.querySelector(this.selectors.boardName).textContent;
+        return document.querySelector(this.selectors.BOARD_NAME).textContent;
     }
 
     doStats() {
-        let lists = document.querySelectorAll(this.selectors.list);
+        let lists = document.querySelectorAll(this.selectors.LIST);
 
         this.getStatsParameters().then(userInput => {
             this.launchStatsPage({
