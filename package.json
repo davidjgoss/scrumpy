@@ -1,6 +1,6 @@
 {
   "name": "Scrumpy",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Chrome extension for simple Scrum functionality on Trello.com",
   "main": "background.js",
   "author": "David Goss",
