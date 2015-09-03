@@ -87,7 +87,7 @@ describe("StatsGenerator tests", function() {
                 cards: ["tom", "dick", "harry"]
             },
             done: {
-                done: ["something"]
+                cards: ["something"]
             }
         };
         expect(generator.getAllCards(testData).length).toBe(7);
@@ -95,6 +95,7 @@ describe("StatsGenerator tests", function() {
 
     it("should note that there were cards without estimates", function() {
         var testData = {
+            userInput: {},
             pending: {
                 cards: [{
                     estimate: 1,
@@ -125,6 +126,7 @@ describe("StatsGenerator tests", function() {
 
     it("should note that there were done cards without actuals", function() {
         var testData = {
+            userInput: {},
             pending: {
                 cards: [{
                     estimate: 1,
@@ -157,7 +159,7 @@ describe("StatsGenerator tests", function() {
         var testData = {
             pending: {estimate: 100},
             inflight: {estimate: 10},
-            done: {estimate: 30}
+            donePlanned: {estimate: 30}
         };
         expect(generator.getInitialEstimate(testData)).toBe(140);
     });
@@ -189,16 +191,16 @@ describe("StatsGenerator tests", function() {
         var testData = {
             pending: {},
             inflight: {},
-            done: {
+            donePlanned: {
                 cards: ["foo", "bar", "baz"],
                 estimate: 10,
                 actual: 8
             }
         };
         expect(generator.getVelocity(testData)).toBe(125);
-        testData.done.actual = 11;
+        testData.donePlanned.actual = 11;
         expect(generator.getVelocity(testData)).toBe(90);
-        testData.done.actual = 13.5;
+        testData.donePlanned.actual = 13.5;
         expect(generator.getVelocity(testData)).toBe(74);
     });
 

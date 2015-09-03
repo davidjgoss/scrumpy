@@ -37,7 +37,8 @@ class ScrumpyTrelloAgent {
 
         if (this.isBoard()) {
             this.waitForBoardUI().then(function() {
-                this.refreshBoard();
+                this.calculateBoard();
+                this.checkStatsButton();
                 this.timer = window.setTimeout(this.refresh.bind(this), 3000);
             }.bind(this));
         } else {
@@ -75,7 +76,6 @@ class ScrumpyTrelloAgent {
         statsButton.innerHTML = "<span class='header-btn-text'>Stats</span>";
         statsButton.addEventListener("click", e => {
             e.preventDefault();
-            this.refresh();
             this.doStats();
         });
 
@@ -99,98 +99,104 @@ class ScrumpyTrelloAgent {
         return totalsNode;
     }
 
-    refreshBoard() {
-        let lists = document.querySelectorAll(this.selectors.LIST);
+    calculateBoard() {
+        let lists = document.querySelectorAll(this.selectors.LIST),
+            listsData;
 
-        for (let list of lists) {
-            this.refreshListTotals(list);
-        }
+        listsData = Array.prototype.map.call(lists, this.getListData.bind(this));
 
-        if (lists.length >= 3) {
-            this.checkStatsButton();
-        }
+        return {
+            "boardName": this.getBoardName(),
+            "labels": this.getAllLabels(listsData),
+            "pending": listsData[0],
+            "inflight": listsData[1],
+            "done": listsData[2]
+        };
     }
 
-    refreshListTotals(list) {
+    getListData(list) {
         let cards = list.querySelectorAll(this.selectors.CARD),
-            estimateTotal = 0,
-            actualTotal = 0;
+            cardsData, estimateTotal = 0, actualTotal = 0;
 
-        for (let card of cards) {
-            let cardData = this.parseCardData(card);
-            if (cardData.estimate !== "none") {
-                estimateTotal += cardData.estimate;
-            }
-            if (cardData.actual !== "none") {
-                actualTotal += cardData.actual;
-            }
+        cardsData = Array.prototype.map.call(cards, this.getCardData.bind(this));
+
+        for (let cardData of cardsData) {
+            estimateTotal += cardData.estimate !== "none" ? cardData.estimate : 0;
+            actualTotal += cardData.actual !== "none" ? cardData.actual : 0;
         }
 
-        this.updateListTotals(list, estimateTotal, actualTotal);
+        this.renderListTotals(list, estimateTotal, actualTotal);
+
+        return {
+            "estimate": this.getAmountAsNumber(estimateTotal),
+            "actual": this.getAmountAsNumber(actualTotal),
+            "cards": cardsData
+        };
     }
 
-    updateListTotals(list, estimateTotal, actualTotal) {
-        estimateTotal = this.getAmountAsNumber(estimateTotal);
-        actualTotal = this.getAmountAsNumber(actualTotal);
-        list.setAttribute("data-scrumpy-estimate", estimateTotal);
-        list.setAttribute("data-scrumpy-actual", actualTotal);
-        this.getListTotalsNode(list).textContent = ` (${estimateTotal}) {${actualTotal}}`;
+    getAllLabels(listsData) {
+        let rawArray = [];
+        for (let listData of listsData) {
+            for (let cardData of listData.cards) {
+                // add the list of labels from each card to the array, but filter out falsy ones first
+                rawArray = rawArray.concat(cardData.labels.filter(label => !!label));
+            }
+        }
+        // transforming to a set and back to an array to remove duplicates
+        return [...new Set(rawArray)];
     }
 
-    parseCardData(card) {
-        let titleNode = card.querySelector(this.selectors.CARD_TITLE),
-            labelsNode = card.querySelector(this.selectors.CARD_LABELS);
-        card.setAttribute("data-scrumpy-name", this.extractCardName(titleNode));
-        card.setAttribute("data-scrumpy-estimate", this.extractCardEstimate(titleNode));
-        card.setAttribute("data-scrumpy-actual", this.extractCardActual(titleNode));
-        card.setAttribute("data-scrumpy-labels", this.extractCardLabels(labelsNode));
-
-        return this.getCardData(card);
+    renderListTotals(list, estimateTotal, actualTotal) {
+        this.getListTotalsNode(list).innerHTML = ` (${this.getAmountAsNumber(estimateTotal)}) {${this.getAmountAsNumber(actualTotal)}}`;
     }
 
-    extractCardLabels(labelsNode) {
-        return Array.prototype.map.call(labelsNode.querySelectorAll(this.selectors.LABEL), labelNode => {
-            return labelNode.textContent;
-        }).join(",");
+    getCardData(card) {
+        return {
+            "name": this.extractCardName(card),
+            "labels": this.extractCardLabels(card),
+            "estimate": this.extractCardEstimate(card),
+            "actual": this.extractCardActual(card)
+        };
     }
 
-    extractCardName(titleNode) {
+    extractCardName(card) {
+        let titleNode = card.querySelector(this.selectors.CARD_TITLE);
         return titleNode.textContent
             .replace(/\((\d+\.*\d*)\)|{(\d+\.*\d*)\}/g, "") // remove the estimates and actuals
             .trim(); // remove whitespace
     }
 
-    extractCardEstimate(titleNode) {
-        let matches = titleNode.textContent.match(this.patterns.CARD_ESTIMATE);
-        if (matches && matches.length > 1 && !isNaN(Number(matches[1]))) {
-            return Number(matches[1]);
+    extractCardLabels(card) {
+        let labelsNode = card.querySelector(this.selectors.CARD_LABELS);
+        return Array.prototype.map.call(labelsNode.querySelectorAll(this.selectors.LABEL), labelNode => {
+            return labelNode.textContent;
+        });
+    }
+
+    extractCardEstimate(card) {
+        let titleNode = card.querySelector(this.selectors.CARD_TITLE);
+        if (titleNode) {
+            let matches = titleNode.textContent.match(this.patterns.CARD_ESTIMATE);
+            if (matches && matches.length > 1 && !isNaN(Number(matches[1]))) {
+                return Number(matches[1]);
+            }
         }
         return "none";
     }
 
-    extractCardActual(titleNode) {
-        let matches = titleNode.textContent.match(this.patterns.CARD_ACTUAL);
-        if (matches && matches.length > 1 && !isNaN(Number(matches[1]))) {
-            return Number(matches[1]);
+    extractCardActual(card) {
+        let titleNode = card.querySelector(this.selectors.CARD_TITLE);
+        if (titleNode) {
+            let matches = titleNode.textContent.match(this.patterns.CARD_ACTUAL);
+            if (matches && matches.length > 1 && !isNaN(Number(matches[1]))) {
+                return Number(matches[1]);
+            }
         }
         return "none";
-    }
-
-    getCardData(card) {
-        return {
-            "name": card.getAttribute("data-scrumpy-name"),
-            "estimate": this.getAmountAsNumber(card.getAttribute("data-scrumpy-estimate")),
-            "actual": this.getAmountAsNumber(card.getAttribute("data-scrumpy-actual"))
-        }
     }
 
     getAmountAsNumber(value) {
         return isNaN(Number(value)) ? "none" : Math.ceil(Number(value) * 100) / 100;
-    }
-
-    getCardsData(list) {
-        let cards = list.querySelectorAll(this.selectors.CARD);
-        return Array.prototype.map.call(cards, this.getCardData.bind(this));
     }
 
     getBoardName() {
@@ -198,16 +204,10 @@ class ScrumpyTrelloAgent {
     }
 
     doStats() {
-        let lists = document.querySelectorAll(this.selectors.LIST);
+        let data = this.calculateBoard();
 
-        this.getStatsParameters().then(userInput => {
-            this.launchStatsPage({
-                userInput,
-                pending: this.getListData(lists[0]),
-                inflight: this.getListData(lists[1]),
-                done: this.getListData(lists[2]),
-                boardName: this.getBoardName()
-            });
+        this.getStatsParameters(data).then(userInput => {
+            this.launchStatsPage(Object.assign(data, {userInput}));
         }).catch(() => {
             // user cancelled - no action to take
         });
@@ -221,6 +221,10 @@ class ScrumpyTrelloAgent {
         return path.match(/^\/b\/([\w\d]*)\/.*/)[1]
     }
 
+    fixDuration(value) {
+        return ~~(value);
+    }
+
     fixStartDate(date) {
         let dateMoment = moment(date);
         if (dateMoment.isoWeekday() > 5) {
@@ -229,11 +233,11 @@ class ScrumpyTrelloAgent {
         return dateMoment.format("YYYY-MM-DD");
     }
 
-    getStatsParameters() {
+    getStatsParameters(data) {
         let boardId = this.getBoardId(), dialogPromise;
         dialogPromise = new Promise(function(resolve, reject) {
-            chrome.storage.sync.get(boardId, savedData => {
-                let dialog = this.buildParametersDialog(boardId, savedData);
+            chrome.storage.sync.get(boardId, savedParams => {
+                let dialog = this.buildParametersDialog(boardId, savedParams, data);
                 this.setupGoButton(dialog, resolve);
                 this.setupCancelButton(dialog, reject);
                 dialog.showModal();
@@ -249,8 +253,9 @@ class ScrumpyTrelloAgent {
 
             dialog.close();
             callback({
-                duration: ~~(dialog.querySelector("#scrumpy-duration").value),
-                startDate: this.fixStartDate(dialog.querySelector("#scrumpy-startdate").value)
+                duration: this.fixDuration(dialog.querySelector("#scrumpy-duration").value),
+                startDate: this.fixStartDate(dialog.querySelector("#scrumpy-startdate").value),
+                interferenceLabel: dialog.querySelector("#scrumpy-interference").value
             });
         });
     }
@@ -276,8 +281,9 @@ class ScrumpyTrelloAgent {
 
     getDefaultParameters() {
         return {
-            duration: "10",
-            startDate: moment().subtract(1, "days").format("YYYY-MM-DD")
+            "duration": "10",
+            "startDate": moment().subtract(1, "days").format("YYYY-MM-DD"),
+            "interferenceLabel": ""
         };
     }
 
@@ -294,8 +300,8 @@ class ScrumpyTrelloAgent {
         return this.getDefaultParameters();
     }
 
-    buildParametersDialog(boardId, data) {
-        let params = this.extractStorageObject(boardId, data),
+    buildParametersDialog(boardId, savedParams, data) {
+        let params = this.extractStorageObject(boardId, savedParams),
             today = moment().format("YYYY-MM-DD"),
             dialog = document.createElement("dialog");
 
@@ -304,13 +310,17 @@ class ScrumpyTrelloAgent {
             <h4>Scrumpy Stats</h4>
             <label>
                 Sprint Duration
-                <input id="scrumpy-duration" value="${params.duration}" required="true" type="number" step="1" min="1" max="20" />
+                <input id="scrumpy-duration" value="${params.duration || ''}" required="true" type="number" step="1" min="1" max="20" />
             </label>
             <label>
                 Start Date
-                <input id="scrumpy-startdate" value="${params.startDate}" required="true" type="date" max="${today}" />
+                <input id="scrumpy-startdate" value="${params.startDate || ''}" required="true" type="date" max="${today}" />
             </label>
-
+            <label>
+                "Interference" Label
+                <input id="scrumpy-interference" value="${params.interferenceLabel || ''}" type="text" list="scrumpy-labels" />
+            </label>
+            <datalist id="scrumpy-labels">${this.buildLabelOptions(data.labels)}</datalist>
             <button class="primary confirm" type="submit">Go</button>
             <button class="negate" type="reset">Cancel</button>
         </form>`;
@@ -318,12 +328,12 @@ class ScrumpyTrelloAgent {
         return document.body.appendChild(dialog);
     }
 
-    getListData(list) {
-        return {
-            estimate: Number(list.getAttribute("data-scrumpy-estimate")),
-            actual: Number(list.getAttribute("data-scrumpy-actual")),
-            cards: this.getCardsData(list)
-        };
+    buildLabelOptions(labels) {
+        let markup = "";
+        for (let label of labels) {
+            markup += `<option>${label}</option>`;
+        }
+        return markup;
     }
 
     launchStatsPage(data) {

@@ -4,8 +4,32 @@ class ScrumpyStatsGenerator {
             service: "getStatsData",
             data: null
         }, data => {
-            this.render(data);
+            this.render(this.fixupData(data));
         });
+    }
+
+    fixupData(data) {
+        let donePlanned = {estimate: 0, actual: 0, cards: []},
+            doneInterference = {actual: 0, cards: []};
+        for (let card of data.done.cards) {
+            if (this.isInterferenceCard(card, data)) {
+                doneInterference.actual += card.actual !== "none" ? card.actual : 0;
+                doneInterference.cards.push(card);
+            } else {
+                donePlanned.estimate += card.estimate !== "none" ? card.estimate : 0;
+                donePlanned.actual += card.actual !== "none" ? card.actual : 0;
+                donePlanned.cards.push(card);
+            }
+        }
+        return Object.assign(data, {donePlanned, doneInterference});
+    }
+
+    isInterferenceCard(card, data) {
+        let interferenceLabel = data.userInput.interferenceLabel;
+        if (interferenceLabel) {
+            return card.labels.includes(interferenceLabel);
+        }
+        return false;
     }
 
     onWeekend(dateMoment) {
@@ -101,14 +125,26 @@ class ScrumpyStatsGenerator {
         return [].concat(data.pending.cards, data.inflight.cards, data.done.cards);
     }
 
+    isCardMissingEstimate(card, data) {
+        let interferenceLabel = data.userInput.interferenceLabel;
+        if (interferenceLabel) {
+            return card.estimate === "none" && !card.labels.includes(interferenceLabel);
+        }
+        return card.estimate === "none";
+    }
+
+    isCardMissingActual(card) {
+        return card.actual === "none";
+    }
+
     getProblems(data) {
         let problems = [];
 
-        if (this.getAllCards(data).some(card => card.estimate === "none")) {
+        if (this.getAllCards(data).some(card => this.isCardMissingEstimate(card, data))) {
             problems.push("Some cards didn't have estimates.");
         }
 
-        if (data.done.cards.some(card => card.actual === "none")) {
+        if (data.done.cards.some(card => this.isCardMissingActual(card))) {
             problems.push("Some completed cards didn't have actuals.");
         }
 
@@ -116,7 +152,7 @@ class ScrumpyStatsGenerator {
     }
 
     getInitialEstimate(data) {
-        return data.pending.estimate + data.inflight.estimate + data.done.estimate;
+        return data.pending.estimate + data.inflight.estimate + data.donePlanned.estimate;
     }
 
     getTitleContent(data) {
@@ -131,7 +167,7 @@ class ScrumpyStatsGenerator {
     }
 
     getVelocity(data) {
-        return Math.floor((data.done.estimate / data.done.actual) * 100);
+        return Math.floor((data.donePlanned.estimate / data.donePlanned.actual) * 100);
     }
 
     getBurndownLabels(data) {
@@ -157,7 +193,16 @@ class ScrumpyStatsGenerator {
             elapsed = this.getElapsedDays(data.userInput.startDate, data.userInput.duration),
             series = [initial];
         for (let day = 1; day <= elapsed; day++) {
-            series.push(initial - (data.done.estimate * (day / elapsed)));
+            series.push(initial - (data.donePlanned.estimate * (day / elapsed)));
+        }
+        return series;
+    }
+
+    getBurndownInterferenceSeries(data) {
+        let elapsed = this.getElapsedDays(data.userInput.startDate, data.userInput.duration),
+            series = [0];
+        for (let day = 1; day <= elapsed; day++) {
+            series.push(data.doneInterference.actual * (day / elapsed));
         }
         return series;
     }
@@ -185,7 +230,8 @@ class ScrumpyStatsGenerator {
             labels: this.getBurndownLabels(data),
             series: [
                 this.getBurndownEstimateSeries(data),
-                this.getBurndownActualSeries(data)
+                this.getBurndownActualSeries(data),
+                this.getBurndownInterferenceSeries(data)
             ]
         });
     }
@@ -201,8 +247,8 @@ class ScrumpyStatsGenerator {
         new Chartist.Bar("#velocity-chart", {
             labels: ["Done this Sprint"],
             series: [
-                [data.done.estimate],
-                [data.done.actual]
+                [data.donePlanned.estimate],
+                [data.donePlanned.actual]
             ]
         }, {
             horizontalBars: true
