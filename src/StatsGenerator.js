@@ -28,7 +28,7 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     isInterferenceCard(card, data) {
         let interferenceLabel = data.userInput.interferenceLabel;
         if (interferenceLabel) {
-            return card.labels.includes(interferenceLabel);
+            return card.labels.indexOf(interferenceLabel) !== -1;
         }
         return false;
     }
@@ -122,15 +122,11 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
         return elapsed;
     }
 
-    getAllCards(data) {
-        return [].concat(data.pending.cards, data.inflight.cards, data.done.cards);
+    getAllPlannedCards(data) {
+        return [].concat(data.pending.cards, data.inflight.cards, data.donePlanned.cards);
     }
 
     isCardMissingEstimate(card, data) {
-        let interferenceLabel = data.userInput.interferenceLabel;
-        if (interferenceLabel) {
-            return card.estimate === "none" && !card.labels.includes(interferenceLabel);
-        }
         return card.estimate === "none";
     }
 
@@ -148,7 +144,7 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     getProblems(data) {
         let problems = [];
 
-        if (this.getAllCards(data).some(card => this.isCardMissingEstimate(card, data))) {
+        if (this.getAllPlannedCards(data).some(card => this.isCardMissingEstimate(card, data))) {
             problems.push("Some cards didn't have estimates.");
         }
 

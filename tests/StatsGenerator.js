@@ -78,7 +78,7 @@ describe("StatsGenerator tests", function() {
         expect(generator.getElapsedDays("2015-08-20", 10)).toBe(2);
     });
 
-    it("should generate a single list of cards", function() {
+    it("should generate a single list of planned cards", function() {
         var testData = {
             pending: {
                 cards: ["foo", "bar", "baz"]
@@ -86,11 +86,11 @@ describe("StatsGenerator tests", function() {
             inflight: {
                 cards: ["tom", "dick", "harry"]
             },
-            done: {
+            donePlanned: {
                 cards: ["something"]
             }
         };
-        expect(generator.getAllCards(testData).length).toBe(7);
+        expect(generator.getAllPlannedCards(testData).length).toBe(7);
     });
 
     it("should note that there were cards without estimates", function() {
@@ -112,6 +112,15 @@ describe("StatsGenerator tests", function() {
                 }]
             },
             done: {
+                cards: [{
+                    estimate: 3,
+                    actual: 2
+                }, {
+                    estimate: "none",
+                    actual: 4
+                }]
+            },
+            donePlanned: {
                 cards: [{
                     estimate: 3,
                     actual: 2
@@ -143,6 +152,15 @@ describe("StatsGenerator tests", function() {
                 }]
             },
             done: {
+                cards: [{
+                    estimate: 3,
+                    actual: 2
+                }, {
+                    estimate: 3,
+                    actual: "none"
+                }]
+            },
+            donePlanned: {
                 cards: [{
                     estimate: 3,
                     actual: 2
