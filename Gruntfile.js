@@ -1,3 +1,4 @@
+/* eslint-env node */
 module.exports = function(grunt) {
     grunt.initConfig({
         babel: {
@@ -13,6 +14,11 @@ module.exports = function(grunt) {
                     "dist/stats-bootstrap.js": "src/stats-bootstrap.js",
                     "dist/website.js": "src/website.js"
                 }
+            }
+        },
+        eslint: {
+            all: {
+                src: ["Gruntfile.js", "src/*.js"]
             }
         },
         jasmine: {
@@ -70,13 +76,14 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks("grunt-babel");
+    grunt.loadNpmTasks("grunt-eslint");
     grunt.loadNpmTasks("grunt-contrib-jasmine");
     grunt.loadNpmTasks("grunt-contrib-sass");
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-contrib-compress");
 
     grunt.registerTask("default", ["watch"]);
-    grunt.registerTask("test", ["jasmine"]);
+    grunt.registerTask("test", ["eslint", "jasmine"]);
     grunt.registerTask("build", ["dist", "compress:chrome"]);
     grunt.registerTask("dist", ["babel", "test", "sass"]);
 };

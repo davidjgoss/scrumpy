@@ -1,4 +1,4 @@
-(function () {
+(function() {
     class Background {
         constructor() {
             chrome.runtime.onMessage.addListener(this.handleRequest.bind(this));

@@ -1,4 +1,4 @@
-class ScrumpyTrelloAgent {
+class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     constructor() {
         this.setConstants();
     }
@@ -218,11 +218,11 @@ class ScrumpyTrelloAgent {
     }
 
     extractBoardIdFromPath(path) {
-        return path.match(/^\/b\/([\w\d]*)\/.*/)[1]
+        return path.match(/^\/b\/([\w\d]*)\/.*/)[1];
     }
 
     fixDuration(value) {
-        return ~~(value);
+        return ~~value;
     }
 
     fixStartDate(date) {
@@ -235,14 +235,14 @@ class ScrumpyTrelloAgent {
 
     getStatsParameters(data) {
         let boardId = this.getBoardId(), dialogPromise;
-        dialogPromise = new Promise(function(resolve, reject) {
+        dialogPromise = new Promise((resolve, reject) => {
             chrome.storage.sync.get(boardId, savedParams => {
                 let dialog = this.buildParametersDialog(boardId, savedParams, data);
                 this.setupGoButton(dialog, resolve);
                 this.setupCancelButton(dialog, reject);
                 dialog.showModal();
             });
-        }.bind(this));
+        });
         this.saveUserInput(dialogPromise, boardId);
         return dialogPromise;
     }
@@ -310,15 +310,15 @@ class ScrumpyTrelloAgent {
             <h4>Scrumpy Stats</h4>
             <label>
                 Sprint Duration
-                <input id="scrumpy-duration" value="${params.duration || ''}" required="true" type="number" step="1" min="1" max="20" />
+                <input id="scrumpy-duration" value="${params.duration || ""}" required="true" type="number" step="1" min="1" max="20" />
             </label>
             <label>
                 Start Date
-                <input id="scrumpy-startdate" value="${params.startDate || ''}" required="true" type="date" max="${today}" />
+                <input id="scrumpy-startdate" value="${params.startDate || ""}" required="true" type="date" max="${today}" />
             </label>
             <label>
                 "Interference" Label
-                <input id="scrumpy-interference" value="${params.interferenceLabel || ''}" type="text" list="scrumpy-labels" />
+                <input id="scrumpy-interference" value="${params.interferenceLabel || ""}" type="text" list="scrumpy-labels" />
             </label>
             <datalist id="scrumpy-labels">${this.buildLabelOptions(data.labels)}</datalist>
             <button class="primary confirm" type="submit">Go</button>

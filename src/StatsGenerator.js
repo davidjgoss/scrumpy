@@ -1,4 +1,4 @@
-class ScrumpyStatsGenerator {
+class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     go() {
         chrome.runtime.sendMessage({
             service: "getStatsData",
@@ -12,12 +12,13 @@ class ScrumpyStatsGenerator {
         let donePlanned = {estimate: 0, actual: 0, cards: []},
             doneInterference = {actual: 0, cards: []};
         for (let card of data.done.cards) {
+            let {estimate, actual} = this.getCardNumbers(card);
             if (this.isInterferenceCard(card, data)) {
-                doneInterference.actual += card.actual !== "none" ? card.actual : 0;
+                doneInterference.actual += actual;
                 doneInterference.cards.push(card);
             } else {
-                donePlanned.estimate += card.estimate !== "none" ? card.estimate : 0;
-                donePlanned.actual += card.actual !== "none" ? card.actual : 0;
+                donePlanned.estimate += estimate;
+                donePlanned.actual += actual;
                 donePlanned.cards.push(card);
             }
         }
@@ -137,6 +138,13 @@ class ScrumpyStatsGenerator {
         return card.actual === "none";
     }
 
+    getCardNumbers(card) {
+        return {
+            estimate: card.estimate !== "none" ? card.estimate : 0,
+            actual: card.actual !== "none" ? card.actual : 0
+        };
+    }
+
     getProblems(data) {
         let problems = [];
 
@@ -167,7 +175,7 @@ class ScrumpyStatsGenerator {
     }
 
     getVelocity(data) {
-        return Math.floor((data.donePlanned.estimate / data.donePlanned.actual) * 100);
+        return Math.floor(data.donePlanned.estimate / data.donePlanned.actual * 100);
     }
 
     getBurndownLabels(data) {
@@ -183,7 +191,7 @@ class ScrumpyStatsGenerator {
             duration = data.userInput.duration,
             series = [initial];
         for (let day = 1; day <= duration; day++) {
-            series.push(initial - (initial * (day / duration)));
+            series.push(initial - initial * day / duration);
         }
         return series;
     }
@@ -193,7 +201,7 @@ class ScrumpyStatsGenerator {
             elapsed = this.getElapsedDays(data.userInput.startDate, data.userInput.duration),
             series = [initial];
         for (let day = 1; day <= elapsed; day++) {
-            series.push(initial - (data.donePlanned.estimate * (day / elapsed)));
+            series.push(initial - data.donePlanned.estimate * day / elapsed);
         }
         return series;
     }
@@ -226,7 +234,7 @@ class ScrumpyStatsGenerator {
     }
 
     populateBurndown(data) {
-        new Chartist.Line("#burndown-chart", {
+        return new Chartist.Line("#burndown-chart", {
             labels: this.getBurndownLabels(data),
             series: [
                 this.getBurndownEstimateSeries(data),
@@ -244,7 +252,7 @@ class ScrumpyStatsGenerator {
     populateVelocity(data) {
         document.getElementById("velocity-percent-text").innerHTML = `Team is running at <strong>${this.getVelocity(data)}%</strong> of estimated velocity this sprint.`;
 
-        new Chartist.Bar("#velocity-chart", {
+        return new Chartist.Bar("#velocity-chart", {
             labels: ["Done this Sprint"],
             series: [
                 [data.donePlanned.estimate],
