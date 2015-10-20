@@ -253,14 +253,28 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     populateBurndown(data) {
-        return new Chartist.Line("#burndown-chart", {
+        var chart = new Chartist.Line("#burndown-chart", {
             labels: this.getBurndownLabels(data),
             series: [
                 this.getBurndownEstimateSeries(data),
                 this.getBurndownActualSeries(data),
                 this.getBurndownInterferenceSeries(data)
             ]
+        }, {
+            axisX: {
+                showGrid: false
+            },
+            axisY: {
+                labelInterpolationFnc: label => label + "h"
+            }
         });
+
+        // make sure the chart recalcs its layout when we print
+        window.matchMedia("print").addListener(function() {
+            chart.update();
+        });
+
+        return chart;
     }
 
     populateAmountDone(data) {

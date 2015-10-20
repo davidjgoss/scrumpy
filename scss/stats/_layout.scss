@@ -1,6 +1,13 @@
+.header {
+    text-align: center;
+}
+
 .layout {
     display: flex;
+    max-width: 90%;
     margin-top: 2.5rem;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .layout__left {

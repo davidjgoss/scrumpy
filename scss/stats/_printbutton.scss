@@ -1,0 +1,19 @@
+.print-button {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    text-transform: uppercase;
+    font-family: $scrumpy-fonts;
+    font-weight: bold;
+    font-size: 1rem;
+    background-color: #eaeaea;
+    color: #333;
+    padding: 0.5em 1em;
+    border: 1px solid #bbb;
+    border-radius: 0.333em;
+    cursor: pointer;
+
+    @media print {
+        display: none;
+    }
+}
