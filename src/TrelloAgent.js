@@ -53,6 +53,7 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
             "LIST": ".js-list",
             "LIST_TITLE": ".js-list-name",
             "CARD": ".list-card",
+            "CARD_COMPOSER": ".list-card-composer-textarea",
             "CARD_TITLE": ".js-card-name",
             "CARD_LABELS": ".js-card-labels",
             "LABEL": ".card-label"
@@ -118,7 +119,7 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
         let cards = list.querySelectorAll(this.selectors.CARD),
             cardsData, estimateTotal = 0, actualTotal = 0;
 
-        cardsData = Array.prototype.map.call(cards, this.getCardData.bind(this));
+        cardsData = Array.prototype.map.call(cards, this.getCardData.bind(this)).filter(x => !!x);
 
         for (let cardData of cardsData) {
             estimateTotal += cardData.estimate !== "none" ? cardData.estimate : 0;
@@ -151,6 +152,9 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     getCardData(card) {
+        if (card.querySelector(this.selectors.CARD_COMPOSER)) {
+            return null;
+        }
         return {
             "name": this.extractCardName(card),
             "labels": this.extractCardLabels(card),
