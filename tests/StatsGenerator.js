@@ -21,6 +21,14 @@ describe("StatsGenerator tests", function() {
         expect(generator.getLastFriday("2015-08-23").format("YYYY-MM-DD")).toBe("2015-08-21");
     });
 
+    it("should correctly decide whether the sprint has decided based on now and start date", function() {
+        expect(generator.hasStarted(moment("2015-08-20"))).toBeTruthy();
+        expect(generator.hasStarted(moment("2015-08-21"))).toBeTruthy();
+        expect(generator.hasStarted(moment("2015-08-22"))).toBeFalsy();
+        generator.isMorning.and.returnValue(true);
+        expect(generator.hasStarted(moment("2015-08-21"))).toBeFalsy();
+    });
+
     it("should get the requested day of the sprint, excluding weekends", function() {
         expect(generator.getSprintDay("2015-08-20", 1).format("YYYY-MM-DD")).toBe("2015-08-20");
         expect(generator.getSprintDay("2015-08-20", 2).format("YYYY-MM-DD")).toBe("2015-08-21");
@@ -41,11 +49,6 @@ describe("StatsGenerator tests", function() {
 
     it("should calculate the date to report to for a historic sprint", function() {
         expect(moment("2014-08-22").isSame(generator.getReportDate("2014-08-11", 10))).toBeTruthy();
-    });
-
-    it("should report to yesterday if running in the morning during sprint", function() {
-        generator.isMorning.and.returnValue(true);
-        expect(moment("2015-08-20").isSame(generator.getReportDate("2015-08-17", 10))).toBeTruthy();
     });
 
     it("should report to today if running in the afternoon during sprint", function() {
@@ -78,6 +81,11 @@ describe("StatsGenerator tests", function() {
         expect(generator.getElapsedDays("2015-08-20", 10)).toBe(2);
     });
 
+    it("should get elapsed days as 0 if run on morning of start date", function() {
+        generator.isMorning.and.returnValue(true);
+        expect(generator.getElapsedDays("2015-08-21", 10)).toBe(0);
+    });
+
     it("should generate a single list of planned cards", function() {
         var testData = {
             pending: {
@@ -95,7 +103,9 @@ describe("StatsGenerator tests", function() {
 
     it("should note that there were cards without estimates", function() {
         var testData = {
-            userInput: {},
+            userInput: {
+                startDate: "2015-08-20"
+            },
             pending: {
                 cards: [{
                     estimate: 1,
@@ -135,7 +145,9 @@ describe("StatsGenerator tests", function() {
 
     it("should note that there were done cards without actuals", function() {
         var testData = {
-            userInput: {},
+            userInput: {
+                startDate: "2015-08-20"
+            },
             pending: {
                 cards: [{
                     estimate: 1,
@@ -191,6 +203,9 @@ describe("StatsGenerator tests", function() {
 
     it("should calculate the amount of work done so far", function() {
         var testData = {
+            userInput: {
+                startDate: "2015-08-20"
+            },
             pending: {},
             inflight: {},
             done: {
@@ -203,10 +218,18 @@ describe("StatsGenerator tests", function() {
             cards: 3,
             actual: 8
         });
+        testData.userInput.startDate = "2016-08-20";
+        expect(generator.getAmountDone(testData)).toEqual({
+            cards: 0,
+            actual: 0
+        });
     });
 
     it("should calculate the sprint velocity so far", function() {
         var testData = {
+            userInput: {
+                startDate: "2015-08-20"
+            },
             pending: {},
             inflight: {},
             donePlanned: {
@@ -220,6 +243,8 @@ describe("StatsGenerator tests", function() {
         expect(generator.getVelocity(testData)).toBe(90);
         testData.donePlanned.actual = 13.5;
         expect(generator.getVelocity(testData)).toBe(74);
+        testData.userInput.startDate = "2016-08-20";
+        expect(generator.getVelocity(testData)).toBe(0);
     });
 
     it("should provide a list of labels for the burndown chart", function() {

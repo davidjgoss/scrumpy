@@ -57,6 +57,15 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
         return moment(dateMoment).startOf("isoweek").add(7, "days");
     }
 
+    hasStarted(dateMoment) {
+        var today = this.getToday(),
+            isMorning = this.isMorning();
+        if (dateMoment.isSame(today)) {
+            return !isMorning;
+        }
+        return dateMoment.isBefore(today);
+    }
+
     getSprintDay(startDate, targetDay) {
         let dateCounter = moment(startDate);
 
@@ -109,6 +118,10 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
             reportDate = this.getReportDate(startDate, duration),
             elapsed;
 
+        if (!this.hasStarted(dateCounter)) {
+            return 0;
+        }
+
         for (elapsed = 1; elapsed <= duration; elapsed++) {
             if (dateCounter.isSame(reportDate, "days")) {
                 break;
@@ -144,6 +157,10 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     getProblems(data) {
         let problems = [];
 
+        if (!this.hasStarted(moment(data.userInput.startDate))) {
+            problems.push("The sprint hasn't started yet.");
+        }
+
         if (this.getAllPlannedCards(data).some(card => this.isCardMissingEstimate(card, data))) {
             problems.push("Some cards didn't have estimates.");
         }
@@ -164,14 +181,20 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     getAmountDone(data) {
-        return {
-            "cards": data.done.cards.length,
-            "actual": data.done.actual
-        };
+        if (this.hasStarted(moment(data.userInput.startDate))) {
+            return {
+                "cards": data.done.cards.length,
+                "actual": data.done.actual
+            };
+        }
+        return {"cards": 0, "actual": 0};
     }
 
     getVelocity(data) {
-        return Math.floor(data.donePlanned.estimate / data.donePlanned.actual * 100);
+        if (this.hasStarted(moment(data.userInput.startDate))) {
+            return Math.floor(data.donePlanned.estimate / data.donePlanned.actual * 100);
+        }
+        return 0;
     }
 
     getBurndownLabels(data) {
