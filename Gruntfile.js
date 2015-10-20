@@ -84,6 +84,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask("default", ["watch"]);
     grunt.registerTask("test", ["eslint", "jasmine"]);
-    grunt.registerTask("build", ["dist", "compress:chrome"]);
-    grunt.registerTask("dist", ["babel", "test", "sass"]);
+    grunt.registerTask("dist", ["babel", "sass"]);
+    grunt.registerTask("build", ["compress:chrome"]);
+
 };

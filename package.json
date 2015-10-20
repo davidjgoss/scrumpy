@@ -12,5 +12,10 @@
     "grunt-contrib-sass": "^0.9.2",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-eslint": "^17.1.0"
+  },
+  "scripts": {
+    "install": "grunt dist",
+    "test": "grunt test",
+    "build": "grunt build"
   }
 }
