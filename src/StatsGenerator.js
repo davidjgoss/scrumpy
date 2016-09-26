@@ -9,10 +9,10 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     fixupData(data) {
-        let donePlanned = {estimate: 0, actual: 0, cards: []},
+        const donePlanned = {estimate: 0, actual: 0, cards: []},
             doneInterference = {actual: 0, cards: []};
-        for (let card of data.done.cards) {
-            let {estimate, actual} = this.getCardNumbers(card);
+        for (const card of data.done.cards) {
+            const {estimate, actual} = this.getCardNumbers(card);
             if (this.isInterferenceCard(card, data)) {
                 doneInterference.actual += actual;
                 doneInterference.cards.push(card);
@@ -26,9 +26,9 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     isInterferenceCard(card, data) {
-        let interferenceLabel = data.userInput.interferenceLabel;
+        const interferenceLabel = data.userInput.interferenceLabel;
         if (interferenceLabel) {
-            return card.labels.indexOf(interferenceLabel) !== -1;
+            return card.labels.includes(interferenceLabel);
         }
         return false;
     }
@@ -58,10 +58,9 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     hasStarted(dateMoment) {
-        var today = this.getToday(),
-            isMorning = this.isMorning();
+        const today = this.getToday();
         if (dateMoment.isSame(today)) {
-            return !isMorning;
+            return !this.isMorning();
         }
         return dateMoment.isBefore(today);
     }
@@ -81,7 +80,7 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     getEndDate(startDate, duration) {
-        let dateCounter = moment(startDate);
+        const dateCounter = moment(startDate);
 
         while (duration > 1) {
             if (this.onWeekday(dateCounter)) {
@@ -94,9 +93,8 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     getReportDate(startDate, duration) {
-        let endDate = this.getEndDate(startDate, duration), reportDate;
-
-        reportDate = this.getToday();
+        const endDate = this.getEndDate(startDate, duration);
+        let reportDate = this.getToday();
         // if it's the morning right now, report to yesterday not today
         if (this.isMorning()) {
             reportDate.subtract(1, "days");
@@ -114,8 +112,8 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     getElapsedDays(startDate, duration) {
+        const reportDate = this.getReportDate(startDate, duration);
         let dateCounter = moment(startDate),
-            reportDate = this.getReportDate(startDate, duration),
             elapsed;
 
         if (!this.hasStarted(dateCounter)) {
@@ -155,7 +153,7 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     getProblems(data) {
-        let problems = [];
+        const problems = [];
 
         if (!this.hasStarted(moment(data.userInput.startDate))) {
             problems.push("The sprint hasn't started yet.");
@@ -198,7 +196,7 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     getBurndownLabels(data) {
-        let labels = ["Start"];
+        const labels = ["Start"];
         for (let day = 1; day <= data.userInput.duration; day++) {
             labels.push(this.getSprintDay(data.userInput.startDate, day).format("D MMM"));
         }
@@ -206,7 +204,7 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     getBurndownEstimateSeries(data) {
-        let initial = this.getInitialEstimate(data),
+        const initial = this.getInitialEstimate(data),
             duration = data.userInput.duration,
             series = [initial];
         for (let day = 1; day <= duration; day++) {
@@ -216,7 +214,7 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     getBurndownActualSeries(data) {
-        let initial = this.getInitialEstimate(data),
+        const initial = this.getInitialEstimate(data),
             elapsed = this.getElapsedDays(data.userInput.startDate, data.userInput.duration),
             series = [initial];
         for (let day = 1; day <= elapsed; day++) {
@@ -226,7 +224,7 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     getBurndownInterferenceSeries(data) {
-        let elapsed = this.getElapsedDays(data.userInput.startDate, data.userInput.duration),
+        const elapsed = this.getElapsedDays(data.userInput.startDate, data.userInput.duration),
             series = [0];
         for (let day = 1; day <= elapsed; day++) {
             series.push(data.doneInterference.actual * (day / elapsed));
@@ -253,7 +251,7 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     populateBurndown(data) {
-        var chart = new Chartist.Line("#burndown-chart", {
+        const chart = new Chartist.Line("#burndown-chart", {
             labels: this.getBurndownLabels(data),
             series: [
                 this.getBurndownEstimateSeries(data),
@@ -278,7 +276,7 @@ class ScrumpyStatsGenerator { /* eslint no-unused-vars: 0 */
     }
 
     populateAmountDone(data) {
-        let stats = this.getAmountDone(data);
+        const stats = this.getAmountDone(data);
         document.getElementById("amount-done-text").innerHTML = `<strong>${stats.cards}</strong> tasks completed in <strong>${stats.actual}</strong> hours this sprint.`;
     }
 
