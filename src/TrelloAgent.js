@@ -16,17 +16,15 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     waitForBoardUI() {
-        let menuSelector = this.selectors.MENU,
-            listSelector = this.selectors.LIST;
-        return new Promise(function(resolve) {
+        return new Promise((resolve) => {
             function checkForBoardUI() {
-                if (document.querySelector(menuSelector) && document.querySelector(listSelector)) {
+                if (document.querySelector(this.selectors.MENU) && document.querySelector(this.selectors.LIST)) {
                     resolve();
                 } else {
-                    window.setTimeout(checkForBoardUI, 100);
+                    window.setTimeout(() => checkForBoardUI.call(this), 100);
                 }
             }
-            checkForBoardUI();
+            checkForBoardUI.call(this);
         });
     }
 
@@ -36,13 +34,13 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
         }
 
         if (this.isBoard()) {
-            this.waitForBoardUI().then(function() {
+            this.waitForBoardUI().then(() => {
                 this.calculateBoard();
                 this.checkStatsButton();
-                this.timer = window.setTimeout(this.refresh.bind(this), 3000);
-            }.bind(this));
+                this.timer = window.setTimeout(() => this.refresh(), 3000);
+            });
         } else {
-            this.timer = window.setTimeout(this.refresh.bind(this), 1000);
+            this.timer = window.setTimeout(() => this.refresh(), 1000);
         }
     }
 
@@ -69,8 +67,7 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     createStatsButton() {
-        let statsButton = document.createElement("a");
-
+        const statsButton = document.createElement("a");
         statsButton.href = "#";
         statsButton.id = "js-scrumpy-stats-button";
         statsButton.className = "header-btn";
@@ -79,13 +76,12 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
             e.preventDefault();
             this.doStats();
         });
-
         return statsButton;
     }
 
     checkStatsButton() {
         if (!this.hasStatsButton()) {
-            let headerNode = document.querySelector(this.selectors.MENU);
+            const headerNode = document.querySelector(this.selectors.MENU);
             headerNode.parentNode.insertBefore(this.createStatsButton(), headerNode);
         }
     }
@@ -102,10 +98,8 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     calculateBoard() {
-        let lists = document.querySelectorAll(this.selectors.LIST),
-            listsData;
-
-        listsData = Array.prototype.map.call(lists, this.getListData.bind(this));
+        const lists = document.querySelectorAll(this.selectors.LIST),
+            listsData = Array.prototype.map.call(lists, list => this.getListData(list));
 
         return {
             "boardName": this.getBoardName(),
@@ -117,12 +111,11 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     getListData(list) {
-        let cards = list.querySelectorAll(this.selectors.CARD),
-            cardsData, estimateTotal = 0, actualTotal = 0;
+        const cards = list.querySelectorAll(this.selectors.CARD),
+            cardsData = Array.prototype.map.call(cards, card => this.getCardData(card)).filter(x => !!x);
+        let estimateTotal = 0, actualTotal = 0;
 
-        cardsData = Array.prototype.map.call(cards, this.getCardData.bind(this)).filter(x => !!x);
-
-        for (let cardData of cardsData) {
+        for (const cardData of cardsData) {
             estimateTotal += cardData.estimate !== "none" ? cardData.estimate : 0;
             actualTotal += cardData.actual !== "none" ? cardData.actual : 0;
         }
@@ -138,8 +131,8 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
 
     getAllLabels(listsData) {
         let rawArray = [];
-        for (let listData of listsData) {
-            for (let cardData of listData.cards) {
+        for (const listData of listsData) {
+            for (const cardData of listData.cards) {
                 // add the list of labels from each card to the array, but filter out falsy ones first
                 rawArray = rawArray.concat(cardData.labels.filter(label => !!label));
             }
@@ -149,7 +142,7 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     renderListTotals(list, estimateTotal, actualTotal) {
-        this.getListTotalsNode(list).innerHTML = ` (${this.getAmountAsNumber(estimateTotal)}) {${this.getAmountAsNumber(actualTotal)}}`;
+        this.getListTotalsNode(list).innerHTML = `(${this.getAmountAsNumber(estimateTotal)}) {${this.getAmountAsNumber(actualTotal)}}`;
     }
 
     getCardData(card) {
@@ -165,23 +158,23 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     extractCardName(card) {
-        let titleNode = card.querySelector(this.selectors.CARD_TITLE);
+        const titleNode = card.querySelector(this.selectors.CARD_TITLE);
         return titleNode.textContent
             .replace(/\((\d+\.*\d*)\)|{(\d+\.*\d*)\}/g, "") // remove the estimates and actuals
             .trim(); // remove whitespace
     }
 
     extractCardLabels(card) {
-        let labelsNode = card.querySelector(this.selectors.CARD_LABELS);
+        const labelsNode = card.querySelector(this.selectors.CARD_LABELS);
         return Array.prototype.map.call(labelsNode.querySelectorAll(this.selectors.LABEL), labelNode => {
             return labelNode.textContent;
         });
     }
 
     extractCardEstimate(card) {
-        let titleNode = card.querySelector(this.selectors.CARD_TITLE);
+        const titleNode = card.querySelector(this.selectors.CARD_TITLE);
         if (titleNode) {
-            let matches = titleNode.textContent.match(this.patterns.CARD_ESTIMATE);
+            const matches = titleNode.textContent.match(this.patterns.CARD_ESTIMATE);
             if (matches && matches.length > 1 && !isNaN(Number(matches[1]))) {
                 return Number(matches[1]);
             }
@@ -190,9 +183,9 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     extractCardActual(card) {
-        let titleNode = card.querySelector(this.selectors.CARD_TITLE);
+        const titleNode = card.querySelector(this.selectors.CARD_TITLE);
         if (titleNode) {
-            let matches = titleNode.textContent.match(this.patterns.CARD_ACTUAL);
+            const matches = titleNode.textContent.match(this.patterns.CARD_ACTUAL);
             if (matches && matches.length > 1 && !isNaN(Number(matches[1]))) {
                 return Number(matches[1]);
             }
@@ -239,10 +232,10 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     getStatsParameters(data) {
-        let boardId = this.getBoardId(), dialogPromise;
-        dialogPromise = new Promise((resolve, reject) => {
+        const boardId = this.getBoardId();
+        const dialogPromise = new Promise((resolve, reject) => {
             chrome.storage.sync.get(boardId, savedParams => {
-                let dialog = this.buildParametersDialog(boardId, savedParams, data);
+                const dialog = this.buildParametersDialog(boardId, savedParams, data);
                 this.setupGoButton(dialog, resolve);
                 this.setupCancelButton(dialog, reject);
                 dialog.showModal();
@@ -293,9 +286,9 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     getStorageObject(key, data) {
-        let obj = {};
-        obj[key] = data;
-        return obj;
+        return {
+            [key]: data
+        };
     }
 
     extractStorageObject(boardId, data) {
@@ -306,7 +299,7 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
     }
 
     buildParametersDialog(boardId, savedParams, data) {
-        let params = this.extractStorageObject(boardId, savedParams),
+        const params = this.extractStorageObject(boardId, savedParams),
             today = moment().format("YYYY-MM-DD"),
             dialog = document.createElement("dialog");
 
@@ -335,7 +328,7 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
 
     buildLabelOptions(labels) {
         let markup = "";
-        for (let label of labels) {
+        for (const label of labels) {
             markup += `<option>${label}</option>`;
         }
         return markup;
