@@ -50,8 +50,8 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
         this.selectors = {
             "BOARD_NAME": ".board-header-btn-text",
             "MENU": ".js-open-add-menu",
-            "LIST": ".js-list",
-            "LIST_TITLE": ".js-list-name",
+            "LIST": ".js-list.list-wrapper",
+            "LIST_TITLE": ".js-list-name-input",
             "CARD": ".list-card",
             "CARD_COMPOSER": ".list-card-composer-textarea",
             "CARD_TITLE": ".js-card-name",
@@ -95,7 +95,8 @@ class ScrumpyTrelloAgent { /* eslint no-unused-vars: 0 */
         if (!totalsNode) {
             totalsNode = document.createElement("span");
             totalsNode.className = "js-scrumpy-totals";
-            list.querySelector(this.selectors.LIST_TITLE).appendChild(totalsNode);
+            const titleNode = list.querySelector(this.selectors.LIST_TITLE);
+            titleNode.parentNode.insertBefore(totalsNode, titleNode.nextElementSibling);
         }
         return totalsNode;
     }
